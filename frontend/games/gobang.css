@@ -1,0 +1,426 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Microsoft YaHei', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c); /*背景使用135°渐变色*/
+    min-height: 100vh; /*最小高度为视口高度，确保背景占满*/
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    color: white;
+}
+
+.container {  /*页面主容器*/
+    max-width: 1200px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header {  /*页头区域*/
+    text-align: center;
+    padding: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+h1 { /*大标题（五子棋）*/
+    font-size: 2.8rem;
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(90deg, #ff9966, #ff5e62);
+    background-clip: text; 
+    -webkit-background-clip: text;
+    color: transparent;
+    letter-spacing: 2px;
+}
+
+.subtitle { /*副标题*/
+    font-size: 1.2rem;
+    opacity: 0.8;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.game-area {  /*游戏主区域*/
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.game-board-container {  /*棋盘*/
+    background: rgba(25, 25, 35, 0.85);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    min-width: 550px;
+}
+
+.game-info {  /*右侧信息面板*/
+    background: rgba(25, 25, 35, 0.85);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.board-header { /*棋盘头部（五子棋战场+当前回合*/
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /*底部边框（浅色半透明）*/
+}
+
+.board-title {
+    font-size: 1.8rem;
+    color: #ff9966;
+}
+
+.player-turn {
+    font-size: 1.2rem;
+    padding: 8px 15px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+#game-board {  /*棋盘网格容器*/
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    gap: 0;
+    width: 500px;
+    height: 500px;
+    margin: 0 auto;
+    background: #dcb35c;
+    border: 3px solid #8b5a2b;  /*模拟木质棋盘*/
+    position: relative;
+}
+
+.cell {  /*棋盘单元格*/
+    position: relative;
+    border: 1px solid #8b5a2b;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.cell:hover {
+    background-color: rgba(220, 179, 92, 0.7); /*点击时背景色变浅*/
+}
+
+.stone { /*棋子基础样式*/
+    position: absolute;
+    width: 85%;
+    height: 85%;
+    border-radius: 50%; /*保证是圆形*/
+    z-index: 2; /*层级高于单元格边框*/
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.black-stone {
+    background: radial-gradient(circle at 30% 30%, #666, #000);
+}
+
+.white-stone {
+    background: radial-gradient(circle at 30% 30%, #fff, #ccc);
+}
+
+.last-move { /*最新落子高亮*/
+    box-shadow: 0 0 0 3px #ff3366;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 12px 25px;
+    background: linear-gradient(135deg, #3498db, #2980b9);  /*保存游戏*/
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: all 0.3s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn-danger {  /*重新开始*/
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.btn-success { /*复盘游戏*/
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+.btn-warning { /*悔棋*/
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+}
+
+.info-card { /*信息面板卡片*/
+    background: rgba(30, 30, 40, 0.7);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.info-card h3 {
+    color: #3498db;
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+    border-bottom: 2px solid rgba(52, 152, 219, 0.3);
+    padding-bottom: 8px;
+}
+
+.stats { /*统计数据容器*/
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.stat {  /*单个统计项*/
+    background: rgba(255, 255, 255, 0.08);
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stat-value { /*统计标签*/
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin: 5px 0;
+    color: #f39c12;
+}
+
+.stat-label { /*统计标签*/
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.game-modes {  /*游戏模式按钮（人人/人机）*/
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.mode-btn { 
+    flex: 1;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.mode-btn.active {
+    background: #3498db;
+    box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+}
+
+.mode-btn:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.difficulty { /*难度设置区域*/
+    margin-top: 15px;
+    display: none; /*初始隐藏*/
+}
+
+.difficulty label {
+    display: block;
+    margin-bottom: 8px;
+    opacity: 0.8;
+}
+
+.slider-container { /*滑块容器*/
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#ai-level { /*AI难度滑块*/
+    flex: 1;
+    height: 10px;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    outline: none;
+}
+
+#ai-level::-webkit-slider-thumb {  
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #3498db;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.level-indicator { /*难度级别显示*/
+    width: 40px;
+    text-align: center;
+    font-weight: bold;
+    color: #f39c12;
+}
+
+.history-container {  /*历史记录容器*/
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 15px;
+    padding-right: 10px;
+}
+
+.history-title {
+    margin: 10px 0;
+    color: #3498db;
+}
+
+.history-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    gap: 8px;
+}
+
+.step {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.step:hover {
+    background: rgba(52, 152, 219, 0.3);
+    transform: scale(1.1);
+}
+
+.step.black {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.step.white {
+    background: rgba(255, 255, 255, 0.6);
+    color: #333;
+}
+
+.win-message { /*胜利提示弹窗*/
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.85);
+    padding: 30px 50px;
+    border-radius: 15px;
+    text-align: center;
+    z-index: 100;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+    border: 2px solid #f39c12;
+    animation: popIn 0.5s ease-out;
+}
+
+@keyframes popIn { /*弹出效果动画（弹窗从 80% 大小、透明状态，过渡到 100% 大小、完全显示）*/
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+.win-message h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #f39c12;
+}
+
+.win-message p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+}
+
+.win-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+/* 响应式设计 */
+@media (max-width: 1000px) {
+    .game-area {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .game-info {
+        width: 100%;
+        max-width: 550px;
+    }
+}
+
+@media (max-width: 600px) {
+    .game-board-container {
+        min-width: 100%;
+        padding: 15px;
+    }
+
+    #game-board {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1/1;
+    }
+
+    h1 {
+        font-size: 2.2rem;
+    }
+
+    .controls {
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+}

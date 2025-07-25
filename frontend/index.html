@@ -1,0 +1,76 @@
+<!DOCTYPE html>  <!-- 声明文档类型为html5 -->
+<html lang="zh-CN"> <!--设置页面语言为中文 -->
+<head>
+    <meta charset="UTF-8"> <!--设置字符编码为UTF-8-->
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"> <!--配置响应式布局，确保在移动设备商正确显示-->
+    <title>小游戏仓库</title> <!--设置浏览器标签页显示的标题-->
+    <link rel="stylesheet" href="styles.css"> <!--引入外部CSS样式表-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!--引入Font Awesome用于图标-->
+</head>
+
+<body>
+    <header> <!--顶部导航栏-->
+        <div class="container"> <!--用于内容居中的容器类（在CSS中定义）-->
+            <h1>小游戏仓库&#127918;</h1>
+            <nav> <!--导航链接区域-->
+                <a href="#" class="active">首页</a>  <!--class="active"标记当前激活的导航项（首页）-->
+                <a href="#game-store">挑选游戏</a>
+                <a href="mygames.html">我的游戏仓库</a>
+                <a href="#">关于网站</a>
+                <a href="#">联系作者</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">  <!--页面主视觉区域（Hero Section）-->
+        <div class="container">
+            <h2>发现经典游戏</h2>
+            <p>精选多款经典单机小游戏，随时随地畅玩</p>
+            <button onclick="scrollToGameStore()">挑选游戏</button>
+        </div>
+    </section>
+
+    <section class="games" class="game-store"> <!--游戏列表-->
+        <div class="container">
+            <h2>游戏商店</h2>
+            <div class="game-grid"> <!--使用网格布局展示游戏卡片（由CSS定义）-->
+                <div class="game-card" onclick="window.location.href='games/gobang.html'">  <!--onclick点击卡片时跳转到对应游戏页面-->
+                    <div class="game-icon">&#x26AB;&#x26AA;</div> <!--游戏图标-->
+                    <h3>五子棋</h3> <!--游戏名称-->
+                    <div class="game-tags">
+                        <span class="game-tag">人机对战</span>
+                        <span class="game-tag">双人对战</span>
+                    </div>
+                    <button class="favorite-btn" data-game="gobang">
+                        <i class="fas fa-star"></i>
+                    </button>
+                </div>
+
+                <div class="game-card" onclick="window.location.href='games/sodoku.html'">
+                    <div class="game-icon">&#x1F522;</div>
+                    <h3>数独</h3>
+                    <div class="game-tags">
+                        <span class="game-tag">单人解密</span>
+                    </div>
+                    <button class="favorite-btn" data-game="sudoku">
+                        <i class="fas fa-star"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>  <!--页脚-->
+        <div class="container">
+            <p>&copy; 2025夏程序设计实践-小游戏仓库</p>
+            <div class="social-links">
+                <a href="#">Gitee</a>
+                <a href="#">文档</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
