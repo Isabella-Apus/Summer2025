@@ -79,7 +79,7 @@ function createBoard() {
             }
 
             cell.addEventListener("click", () => handleCellClick(i, j)); //点击时间
-            boardElement.appendChild(cell);  //将下棋子格子添加到棋盘容器中
+            boardElement.appendChild(cell); //将下棋子格子添加到棋盘容器中
         }
     }
 }
@@ -122,7 +122,7 @@ function placeStone(row, col, player) {
     board[row][col] = player;
     moveCount++;
 
-    moveHistory.push({ row: row, col: col, player: player,step:moveCount });
+    moveHistory.push({ row: row, col: col, player: player, step: moveCount });
 
     // 更新UI
     const cell = document.querySelector(
@@ -146,14 +146,14 @@ function placeStone(row, col, player) {
     lastMove = { row, col };
 
     // 更新历史
-    addToHistory(row, col, player,moveCount);
+    addToHistory(row, col, player, moveCount);
 
     // 更新统计数据
     document.getElementById("moves-count").textContent = moveCount;
 }
 
 // 添加历史记录
-function addToHistory(row, col, player,step) {
+function addToHistory(row, col, player, step) {
     const historySteps = document.getElementById("history-steps");
     const stepElement = document.createElement("div");
     stepElement.className = `step ${player === BLACK ? "black" : "white"}`;
@@ -174,10 +174,11 @@ function addToHistory(row, col, player,step) {
             }, 2000);
         } else {
             console.error(`未找到格子：(${row}, ${col})`);
-            console.log("当前棋盘格子：",
-                Array.from(document.querySelectorAll(".cell")).map(cell => ({
+            console.log(
+                "当前棋盘格子：",
+                Array.from(document.querySelectorAll(".cell")).map((cell) => ({
                     row: cell.dataset.row,
-                    col: cell.dataset.col
+                    col: cell.dataset.col,
                 }))
             );
         }
@@ -197,8 +198,7 @@ function computerMove() {
     if (aiLevel === 1) {
         // 中等难度 - 基础策略
         move = getBasicStrategyMove();
-    } 
-    else if (aiLevel === 2) {
+    } else if (aiLevel === 2) {
         // 较高难度 - 进攻防守平衡
         move = getBalancedMove();
     } else {
@@ -229,21 +229,23 @@ function computerMove() {
 // 获取指定范围内的所有空位
 function getEmptyCellsInRange(centerRow, centerCol, range) {
     const emptyCells = [];
-    
+
     // 遍历范围内的所有单元格
     for (let i = centerRow - range; i <= centerRow + range; i++) {
         for (let j = centerCol - range; j <= centerCol + range; j++) {
             // 检查是否在棋盘范围内且为空位
             if (
-                i >= 0 && i < BOARD_SIZE &&
-                j >= 0 && j < BOARD_SIZE &&
+                i >= 0 &&
+                i < BOARD_SIZE &&
+                j >= 0 &&
+                j < BOARD_SIZE &&
                 board[i][j] === EMPTY
             ) {
                 emptyCells.push({ row: i, col: j });
             }
         }
     }
-    
+
     return emptyCells;
 }
 
@@ -267,20 +269,27 @@ function getRandomPlus() {
         const center = Math.floor(BOARD_SIZE / 2);
         return { row: center, col: center };
     }
-    
+
     // 从最小范围开始尝试，逐步扩大
     for (let range = 1; range <= BOARD_SIZE; range++) {
         // 获取当前范围内的所有空位
-        const emptyCells = getEmptyCellsInRange(lastBlackMove.row, lastBlackMove.col, range);
-        
+        const emptyCells = getEmptyCellsInRange(
+            lastBlackMove.row,
+            lastBlackMove.col,
+            range
+        );
+
         // 如果该范围内有空位，随机选择一个
         if (emptyCells.length > 0) {
             return emptyCells[Math.floor(Math.random() * emptyCells.length)];
         }
     }
-    
+
     // 如果所有范围都满了（理论上不可能，因为棋盘不会同时满）
-    return { row: Math.floor(Math.random() * BOARD_SIZE), col: Math.floor(Math.random() * BOARD_SIZE) };
+    return {
+        row: Math.floor(Math.random() * BOARD_SIZE),
+        col: Math.floor(Math.random() * BOARD_SIZE),
+    };
 }
 
 // 基础策略 - 优先防守和进攻
@@ -292,7 +301,6 @@ function getBasicStrategyMove() {
     // 2. 检查对手是否即将获胜
     move = findWinningMove(BLACK);
     if (move) return move;
-
 
     // 4. 随机落子
     return getRandomPlus();
@@ -319,9 +327,7 @@ function getBalancedMove() {
     // 5. 寻找有利位置
     move = findStrategicPosition();
     if (move) return move;
-
 }
-
 
 // 专家策略 - 使用启发式评估函数
 function getExpertMove() {
@@ -539,7 +545,7 @@ function evaluatePosition(row, col) {
     for (const [dx, dy] of directions) {
         // 评估白子的潜力
         board[row][col] = WHITE;
-        score += evaluateLine(row, col, dx, dy, WHITE) * 10;
+        score += evaluateLine(row, col, dx, dy, WHITE) * 5;
         board[row][col] = EMPTY;
 
         // 评估黑子的威胁
@@ -555,7 +561,7 @@ function evaluatePosition(row, col) {
 function evaluateLine(row, col, dx, dy, player) {
     let score = 0;
     let count = 1; // 当前位置
-
+    let flag3 = 0;
     // 正向检查
     for (let i = 1; i <= 4; i++) {
         const ni = row + dx * i;
@@ -566,6 +572,7 @@ function evaluateLine(row, col, dx, dy, player) {
         if (board[ni][nj] === player) {
             count++;
         } else if (board[ni][nj] === -player) {
+            flag3 = 1;
             break;
         }
     }
@@ -580,6 +587,7 @@ function evaluateLine(row, col, dx, dy, player) {
         if (board[ni][nj] === player) {
             count++;
         } else if (board[ni][nj] === -player) {
+            flag3 = 1;
             break;
         }
     }
@@ -590,9 +598,12 @@ function evaluateLine(row, col, dx, dy, player) {
     } else if (count === 4) {
         score += 1000; // 活四
     } else if (count === 3) {
-        score += 100; // 活三
+        score += 500; // 活三
+        if (flag3 === 1) {
+            score -= 450;
+        }
     } else if (count === 2) {
-        score += 10; // 活二
+        score += 50; // 活二
     }
 
     return score;
@@ -661,51 +672,53 @@ function updatePlayerTurn() {
 // 悔棋功能
 function undoMove() {
     if (moveHistory.length < 1 || !gameActive) return;
-            
+
     // 获取最后一步
     const last = moveHistory.pop();
     if (!last) {
         console.log("无法获取最后一步");
         return;
     }
-            
+
     // 从棋盘上移除棋子
     board[last.row][last.col] = EMPTY;
-    const cell = document.querySelector(`.cell[data-row="${last.row}"][data-col="${last.col}"]`);
+    const cell = document.querySelector(
+        `.cell[data-row="${last.row}"][data-col="${last.col}"]`
+    );
     if (!cell) {
         console.log(`找不到单元格: 行${last.row}, 列${last.col}`);
         return;
     }
-    
-    const stone = cell.querySelector('.stone');
+
+    const stone = cell.querySelector(".stone");
     if (stone) {
         stone.remove();
         console.log(`已移除棋子: 行${last.row}, 列${last.col}`);
     } else {
         console.log(`单元格中没有棋子: 行${last.row}, 列${last.col}`);
     }
-            
+
     // 更新最后一步标记
     if (lastMove && lastMove.row === last.row && lastMove.col === last.col) {
         lastMove = null;
     }
-            
+
     moveCount--;
-            
+
     // 从历史记录中移除
-    const historySteps = document.getElementById('history-steps');
+    const historySteps = document.getElementById("history-steps");
     if (historySteps.lastChild) {
         historySteps.removeChild(historySteps.lastChild);
     }
-            
+
     // 更新当前玩家
     currentPlayer = last.player;
-    
+
     // 更新步数显示
-    document.getElementById('moves-count').textContent = moveCount;
-            
+    document.getElementById("moves-count").textContent = moveCount;
+
     // 如果是人机对战，需要额外移除电脑的一步
-    if (gameMode === 'pve' && moveHistory.length > 0) {
+    if (gameMode === "pve" && moveHistory.length > 0) {
         if (last.player === BLACK) {
             // 寻找倒数第二个黑方落子
             lastBlackMove = null;
@@ -733,37 +746,34 @@ function undoMove() {
         if (historySteps.lastChild) {
             historySteps.removeChild(historySteps.lastChild);
         }
-
-    
     }
     updatePlayerTurn();
-    
+
     // 触发游戏状态更新事件
-    if (typeof onGameStateChanged === 'function') {
+    if (typeof onGameStateChanged === "function") {
         onGameStateChanged();
     }
-    
+
     console.log("悔棋完成，当前moveHistory长度:", moveHistory.length);
 
-        // 更新步数显示
-        document.getElementById("moves-count").textContent = moveCount;
+    // 更新步数显示
+    document.getElementById("moves-count").textContent = moveCount;
 
-        // 更新lastMove为当前最后一步
-        lastMove =
-            moveHistory.length > 0
-                ? {
-                      row: moveHistory[moveHistory.length - 1].row,
-                      col: moveHistory[moveHistory.length - 1].col,
-                  }
+    // 更新lastMove为当前最后一步
+    lastMove =
+        moveHistory.length > 0
+            ? {
+                  row: moveHistory[moveHistory.length - 1].row,
+                  col: moveHistory[moveHistory.length - 1].col,
+              }
             : null;
-         if (lastMove) {
-             const lastCell = document.querySelector(
-                 `.cell[data-row="${lastMove.row}"][data-col="${lastMove.col}"] .stone`
-             );
-             if (lastCell) lastCell.classList.add("last-move");
-         }
+    if (lastMove) {
+        const lastCell = document.querySelector(
+            `.cell[data-row="${lastMove.row}"][data-col="${lastMove.col}"] .stone`
+        );
+        if (lastCell) lastCell.classList.add("last-move");
     }
-
+}
 
 // 结束游戏
 function endGame(winner) {
@@ -785,7 +795,6 @@ function endGame(winner) {
                         <button class="btn" id="close-message-btn">关闭</button>
                     </div>
                 `;
-        
     } else if (winner === WHITE) {
         whiteScore++;
         document.getElementById("white-score").textContent = whiteScore;
@@ -799,7 +808,6 @@ function endGame(winner) {
                         <button class="btn" id="close-message-btn">关闭</button>
                     </div>
                 `;
-        
     } else {
         winMessage.innerHTML = `
                     <h2>平局!</h2>
@@ -854,7 +862,7 @@ function initEventListeners() {
                 gameTime,
                 blackStore,
                 whiteScore,
-                lastBlackMove
+                lastBlackMove,
             })
         );
         alert("游戏已保存！");
@@ -874,7 +882,7 @@ function initEventListeners() {
             blackStore = gameData.blackStore;
             whiteScore = gameData.whiteScore;
             lastBlackMove = gameData.lastBlackMove;
-            
+
             // 更新UI
             updatePlayerTurn();
             document.getElementById("moves-count").textContent = moveCount;
@@ -889,7 +897,7 @@ function initEventListeners() {
             const historySteps = document.getElementById("history-steps");
             historySteps.innerHTML = "";
             moveHistory.forEach((move) => {
-                addToHistory(move.row, move.col, move.player,move.step);
+                addToHistory(move.row, move.col, move.player, move.step);
             });
             lastMove =
                 moveHistory.length > 0

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数独</title>
+    <link rel="stylesheet" href="sudoku.css">
+    
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>数独挑战</h1>
+            <p class="subtitle">每行、每列、每子方格都必须包含1-9的数字且不重复</p>
+        </header>
+
+        <div class="game-area">
+            <div class="game-board-container">
+                <div class="board-header">
+                    <h2 class="board-title">数独谜题</h2>
+                    <div class="game-status" id="game-status">
+                        当前状态: 游戏进行中
+                    </div>
+                    <div class="timer" id="timer">00:00</div>
+                </div>
+
+                <div id="sudoku-board"></div>
+
+                <div class="controls">
+                    <button class="btn btn-warning" id="new-game-btn">新游戏</button>
+                    <button class="btn btn-danger" id="check-btn">检查答案</button>
+                    <button class="btn btn-success" id="solve-btn">显示答案</button>
+                    <button class="btn btn-info" id="hint-btn">提示</button>
+                    <button class="btn" id="undo-btn">撤销</button>
+                </div>
+
+                <div class="number-controls">
+                    <button class="num-btn" data-number="1">1</button>
+                    <button class="num-btn" data-number="2">2</button>
+                    <button class="num-btn" data-number="3">3</button>
+                    <button class="num-btn" data-number="4">4</button>
+                    <button class="num-btn" data-number="5">5</button>
+                    <button class="num-btn" data-number="6">6</button>
+                    <button class="num-btn" data-number="7">7</button>
+                    <button class="num-btn" data-number="8">8</button>
+                    <button class="num-btn" data-number="9">9</button>
+                    <button class="num-btn" data-number="0">清除</button>
+                </div>
+
+                <div class="keyboard-hint">
+                    使用键盘数字键 1-9 填写数字，0 或退格键清除
+                </div>
+
+                <div class="note-mode">
+                    <span>笔记模式:</span>
+                    <label class="switch">
+                        <input type="checkbox" id="note-mode-toggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span id="note-mode-status">关闭</span>
+                </div>
+
+                <div class="note-hint">
+                    注意：笔记模式关闭后，才能正常填写/清除数字
+                </div>
+            </div>
+
+            <div class="game-info">
+                <div class="info-card">
+                    <h3>游戏状态</h3>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-value" id="mistakes">0</div>
+                            <div class="stat-label">错误次数</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="hints">3</div>
+                            <div class="stat-label">剩余提示</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="remaining">81</div>
+                            <div class="stat-label">剩余空格</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="difficulty-display">中等</div>
+                            <div class="stat-label">难度级别</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>游戏设置</h3>
+                    <div class="difficulty-selector">
+                        <label>难度级别: <span class="level-indicator" id="difficulty-level-display">中等</span></label>
+                        <div class="slider-container">
+                            <input type="range" id="difficulty-level" min="1" max="3" value="2">
+                        </div>
+                    </div>
+
+                </div>
+
+                
+            </div>
+        </div>
+    </div>
+    
+    <script src="sudoku.js" defer></script>
+</body>
+
+</html>
