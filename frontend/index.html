@@ -1,76 +1,13 @@
-<!DOCTYPE html>  <!-- иЫцВнд╣╣юЮпмн╙html5 -->
-<html lang="zh-CN"> <!--иХжцрЁцФсОятн╙жпнд -->
-<head>
-    <meta charset="UTF-8"> <!--иХжцвж╥Ш╠ЮбКн╙UTF-8-->
-    <meta name="viewport" content="width=device-width,initial-scale=1.0"> <!--еДжцоЛс╕й╫╡╪╬жё╛х╥╠ётзрф╤╞иХ╠╦илуЩх╥отй╬-->
-    <title>п║сно╥╡ж©Б</title> <!--иХжцД╞ююфВ╠Йг╘рЁотй╬╣д╠ЙлБ-->
-    <link rel="stylesheet" href="styles.css"> <!--рЩхКмБ╡©CSSяЫй╫╠М-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!--рЩхКFont Awesomeсцсзм╪╠Й-->
-</head>
-
-<body>
-    <header> <!--╤╔╡©╣╪╨╫ю╦-->
-        <div class="container"> <!--сцсздзхщ╬сжп╣дхщфВюЮё╗тзCSSжп╤╗рЕё╘-->
-            <h1>п║сно╥╡ж©Б&#127918;</h1>
-            <nav> <!--╣╪╨╫а╢╫сгЬсР-->
-                <a href="#" class="active">йврЁ</a>  <!--class="active"╠Й╪г╣╠г╟╪╓╩Н╣д╣╪╨╫оНё╗йврЁё╘-->
-                <a href="#game-store">лТя║сно╥</a>
-                <a href="mygames.html">нр╣дсно╥╡ж©Б</a>
-                <a href="#">╧ьсзмЬу╬</a>
-                <a href="#">а╙о╣вВуъ</a>
-            </nav>
-        </div>
-    </header>
-
-    <section class="hero">  <!--рЁцФжВйс╬УгЬсРё╗Hero Sectionё╘-->
-        <div class="container">
-            <h2>╥╒ож╬╜╣Дсно╥</h2>
-            <p>╬╚я║╤Ю©Н╬╜╣Д╣╔╩Зп║сно╥ё╛кФй╠кФ╣ьЁ╘мФ</p>
-            <button onclick="scrollToGameStore()">лТя║сно╥</button>
-        </div>
-    </section>
-
-    <section class="games" class="game-store"> <!--сно╥ап╠М-->
-        <div class="container">
-            <h2>сно╥ил╣Й</h2>
-            <div class="game-grid"> <!--й╧сцмЬ╦Я╡╪╬жу╧й╬сно╥©╗ф╛ё╗сиCSS╤╗рЕё╘-->
-                <div class="game-card" onclick="window.location.href='games/gobang.html'">  <!--onclick╣Ц╩В©╗ф╛й╠лЬв╙╣╫╤тс╕сно╥рЁцФ-->
-                    <div class="game-icon">&#x26AB;&#x26AA;</div> <!--сно╥м╪╠Й-->
-                    <h3>нЕвсфЕ</h3> <!--сно╥цШЁф-->
-                    <div class="game-tags">
-                        <span class="game-tag">хк╩З╤ту╫</span>
-                        <span class="game-tag">к╚хк╤ту╫</span>
-                    </div>
-                    <button class="favorite-btn" data-game="gobang">
-                        <i class="fas fa-star"></i>
-                    </button>
-                </div>
-
-                <div class="game-card" onclick="window.location.href='games/sodoku.html'">
-                    <div class="game-icon">&#x1F522;</div>
-                    <h3>йЩ╤ю</h3>
-                    <div class="game-tags">
-                        <span class="game-tag">╣╔хк╫Бцэ</span>
-                    </div>
-                    <button class="favorite-btn" data-game="sudoku">
-                        <i class="fas fa-star"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer>  <!--рЁ╫е-->
-        <div class="container">
-            <p>&copy; 2025одЁлпРиХ╪фй╣╪Ы-п║сно╥╡ж©Б</p>
-            <div class="social-links">
-                <a href="#">Gitee</a>
-                <a href="#">нд╣╣</a>
-            </div>
-        </div>
-    </footer>
-
-    <script src="script.js"></script>
-</body>
-
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Е╟▐Ф╦╦Ф┬▐Д╩⌠Е╨⌠</title>
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>
