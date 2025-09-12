@@ -53,7 +53,7 @@ app.use(
         // 同时允许本地和线上前端的地址
         origin: [
             "http://localhost:5173",
-            "https://your-frontend-app-name.onrender.com",
+            "https://frontend-production-9a0f.up.railway.app",
         ],
         credentials: true,
     })
