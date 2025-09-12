@@ -18,11 +18,16 @@ const saltRounds = 10; //哈希强度
 const JWT_SECRET = process.env.JWT_SECRET||"(7 % x) + bHATg8DdjpYf";
 
 const mysqlPool = mysql.createPool({
-    host: process.env.DB_HOST || "localhost",
-    user: process.env.DB_USER || "root",
-    password: process.env.DB_PASSWORD || "root",
-    database: process.env.DB_NAME || "gamehub",
-    port: process.env.DB_PORT || 3306,
+    // host: process.env.MYSQLHOST || "localhost",
+    // user: process.env.MYSQLUSER || "root",
+    // password: process.env.MYSQLPASSWORD || "root",
+    // database: process.env.MYSQLDATABASE || "gamehub",
+    // port: process.env.MYSQLPORT || 3306,
+    host: process.env.MYSQLHOST ,
+    user: process.env.MYSQLUSER ,
+    password: process.env.MYSQLPASSWORD ,
+    database: process.env.MYSQLDATABASE ,
+    port: process.env.MYSQLPORT ,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
