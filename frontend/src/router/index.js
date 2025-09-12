@@ -24,7 +24,7 @@ const router = createRouter({
     {
       path: '/friends',
       name: 'friend-manager',
-      component: () => import('../views/FriendManagerView.vue'),
+      component: () => import('../views/FriendManage.vue'),
       meta: { requiresAuth: true },
     },
     {
@@ -42,17 +42,15 @@ const router = createRouter({
   ],
 })
 
-// 全局前置守卫 (已修复)
+// 全局前置守卫，必须登录才能完成功能
 router.beforeEach(async (to, from, next) => {
   const { useAuthStore } = await import('@/stores/auth')
   const authStore = useAuthStore()
 
   if (to.meta.requiresAuth && !authStore.isLoggedIn) {
-    // 如果需要登录但用户未登录
-    authStore.openAuthModal('login') // 弹出登录框
-    next(false) // 取消导航，停留在当前页面
+    authStore.openAuthModal('login') 
+    next(false) 
   } else {
-    // 否则，正常进行导航
     next()
   }
 })

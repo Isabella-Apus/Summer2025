@@ -7,7 +7,6 @@
       </header>
 
       <div class="game-area">
-        <!-- 左侧游戏板和控制区域 -->
         <div class="game-board-container">
           <div class="board-header">
             <h2 class="board-title">数独谜题</h2>
@@ -128,17 +127,16 @@ import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import api from '@/services/api';
 
-// --- Vue 响应式状态 ---
 const board = ref([]);
 const initialBoard = ref([]);
 const solution = ref([]);
-const notes = reactive({}); // 使用 reactive 对象来存储笔记
-const selectedCell = ref(null); // { row, col }
+const notes = reactive({}); 
+const selectedCell = ref(null); 
 const gameActive = ref(true);
 const noteMode = ref(false);
 const mistakes = ref(0);
 const hints = ref(3);
-const difficulty = ref(2); // 1-简单, 2-中等, 3-困难
+const difficulty = ref(2); 
 const playTime = ref(0);
 const timerInterval = ref(null);
 const moveHistory = ref([]);
@@ -148,7 +146,7 @@ const winMessage = ref('');
 const isSaveModalVisible = ref(false);
 const puzzleNameInput = ref('');
 const currentRecordId = ref(null);
-const cellStatus = reactive({}); // 存储单元格的检查状态 (e.g., 'error', 'correct')
+const cellStatus = reactive({}); 
 const SIZE = 9
 const EMPTY = 0
 const authStore = useAuthStore();
@@ -157,7 +155,7 @@ const router = useRouter();
 const startTime = ref(null);
 const gameName = ref('');
 
-// --- 计算属性 ---
+//计算属性
 const flatBoard = computed(() => board.value.flat());
 const remainingCells = computed(() => board.value.flat().filter(c => c === 0).length);
 const difficultyName = computed(() => ['简单', '中等', '困难'][difficulty.value - 1]);
@@ -167,7 +165,7 @@ const formattedTime = computed(() => {
   return `${minutes}:${seconds}`;
 });
 
-// --- 游戏核心方法 ---
+//游戏核心方法
 const startNewGame = () => {
   // 根据难度生成数独
   const puzzle = generate(difficulty.value);
@@ -209,7 +207,7 @@ const selectCell = (row, col) => {
 const placeNumber = (num) => {
   if (!selectedCell.value || !gameActive.value) return;
   const { row, col } = selectedCell.value;
-
+  const index = row * SIZE + col;
   const oldVal = board.value[row][col];
   const oldNotes = notes[`${row}-${col}`] ? new Set(notes[`${row}-${col}`]) : new Set();
   moveHistory.value.push({ row, col, oldVal, oldNotes });
@@ -218,20 +216,21 @@ const placeNumber = (num) => {
   delete cellStatus[`${row}-${col}`];
 
   if (noteMode.value) {
-    if (!notes[`${row}-${col}`]) notes[`${row}-${col}`] = new Set();
+    //笔记模式
+    if (!notes[index]) notes[index] = new Set();
     if (num === 0) {
-      notes[`${row}-${col}`].clear();
+      notes[index].clear();
     } else {
-      if (notes[`${row}-${col}`].has(num)) {
-        notes[`${row}-${col}`].delete(num);
+      if (notes[index].has(num)) {
+        notes[index].delete(num);
       } else {
-        notes[`${row}-${col}`].add(num);
+        notes[index].add(num);
       }
     }
   } else {
-    // 正常填数
+    //正常填数
     board.value[row][col] = num;
-
+    if (notes[index]) notes[index].clear();
     // 检查是否完成
     if (remainingCells.value === 1 && num !== 0) {
       checkSolution(true);
@@ -243,8 +242,9 @@ const undoMove = () => {
   if (moveHistory.value.length === 0) return;
   const last = moveHistory.value.pop();
   const { row, col, oldVal, oldNotes } = last;
+  const index = row * SIZE + col;
   board.value[row][col] = oldVal;
-  notes[`${row}-${col}`] = oldNotes;
+  notes[index] = oldNotes;
 };
 
 const checkSolution = (isFinalCheck = false) => {
@@ -277,11 +277,29 @@ const checkSolution = (isFinalCheck = false) => {
 };
 
 const showSolution = () => {
-  board.value = solution.value.map(row => [...row]);
   gameActive.value = false;
   clearInterval(timerInterval.value);
+
+  for (let r = 0; r < SIZE; r++) {
+    for (let c = 0; c < SIZE; c++) {
+      if (initialBoard.value[r][c] !== EMPTY) continue;
+      const key = `${r}-${c}`;
+      const userVal = board.value[r][c];
+
+      if (userVal === EMPTY) {
+        cellStatus[key] = 'missing'; 
+      } else if (userVal === solution.value[r][c]) {
+        cellStatus[key] = 'correct'; 
+      } else {
+        cellStatus[key] = 'error'; 
+      }
+    }
+  }
+
+  board.value = solution.value.map(row => [...row]);
+
   winTitle.value = "答案已显示";
-  winMessage.value = "";
+  winMessage.value = "状态说明：绿色-填写正确，红色-填写错误，蓝色-未填写。";
   isGameFinished.value = true;
   recordGameSession(0);
 };
@@ -301,7 +319,7 @@ const giveHint = () => {
   }
 };
 
-/** 检查数字放置是否有效 */
+//检查数字放置是否合理
 function isValid(board, row, col, num) {
   for (let x = 0; x < SIZE; x++) {
     if (board[row][x] === num) return false;
@@ -319,7 +337,7 @@ function isValid(board, row, col, num) {
   return true;
 }
 
-/** 回溯求解 */
+//求解数独
 function solveSudoku(board) {
   for (let row = 0; row < SIZE; row++) {
     for (let col = 0; col < SIZE; col++) {
@@ -338,7 +356,7 @@ function solveSudoku(board) {
   return true;
 }
 
-/** 随机打乱数组 */
+//随机打乱数组
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -347,50 +365,93 @@ function shuffle(array) {
   return array;
 }
 
-/** 生成数独谜题 */
-function generate(difficulty = 2) {
-  const board = Array(SIZE).fill(0).map(() => Array(SIZE).fill(EMPTY));
+//计算数独解的数量（确保唯一解）
+function countSolutions(board) {
+  let row = -1, col = -1;
+  for (let r = 0; r < SIZE; r++) {
+    for (let c = 0; c < SIZE; c++) {
+      if (board[r][c] === EMPTY) {
+        row = r; col = c; break;
+      }
+    }
+    if (row !== -1) break;
+  }
 
-  // 填充对角线的 3x3 子格
-  for (let i = 0; i < SIZE; i += 3) {
-    const nums = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-    let k = 0;
-    for (let row = 0; row < 3; row++) {
-      for (let col = 0; col < 3; col++) {
-        board[i + row][i + col] = nums[k++];
+  if (row === -1) return 1;
+
+  let count = 0;
+  for (let num = 1; num <= SIZE; num++) {
+    if (isValid(board, row, col, num)) {
+      board[row][col] = num;
+      count += countSolutions(board);
+      board[row][col] = EMPTY; 
+      if (count >= 2) return 2; 
+    }
+  }
+  return count;
+}
+
+function fillBoard(board) {
+  for (let row = 0; row < SIZE; row++) {
+    for (let col = 0; col < SIZE; col++) {
+      if (board[row][col] === EMPTY) {
+        const nums = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        for (const num of nums) {
+          if (isValid(board, row, col, num)) {
+            board[row][col] = num;
+            if (fillBoard(board)) return true;
+            board[row][col] = EMPTY;
+          }
+        }
+        return false;
       }
     }
   }
+  return true;
+}
 
-  solveSudoku(board);
+//生成数独
+function generate(difficulty = 2) {
+  const fullBoard = Array(SIZE).fill(0).map(() => Array(SIZE).fill(EMPTY));
+  fillBoard(fullBoard); 
+
+  const puzzle = fullBoard.map(row => [...row]);
 
   let cellsToRemove;
   switch (difficulty) {
-    case 1: cellsToRemove = 40; break;
-    case 3: cellsToRemove = 55; break;
-    default: cellsToRemove = 48; break;
+    case 1: cellsToRemove = 40; break; 
+    case 3: cellsToRemove = 55; break;     default: cellsToRemove = 48; break;
   }
 
-  let attempts = cellsToRemove;
-  while (attempts > 0) {
+  let removed = 0;
+  while (removed < cellsToRemove) {
     const row = Math.floor(Math.random() * SIZE);
     const col = Math.floor(Math.random() * SIZE);
-    if (board[row][col] !== EMPTY) {
-      board[row][col] = EMPTY;
-      attempts--;
+
+    if (puzzle[row][col] !== EMPTY) {
+      const backup = puzzle[row][col];
+      puzzle[row][col] = EMPTY;
+
+      const tempBoard = puzzle.map(r => [...r]);
+      const solutionCount = countSolutions(tempBoard);
+
+      if (solutionCount !== 1) { 
+        puzzle[row][col] = backup;
+      } else {
+        removed++;
+      }
     }
   }
-  return board;
+  return puzzle;
 }
 
-/** 求解数独谜题 **/
 function solve(puzzle) {
   const solution = puzzle.map((row) => [...row]);
   solveSudoku(solution);
   return solution;
 }
 
-// --- UI 辅助方法 ---
+//页面设计
 const getRow = i => Math.floor(i / 9);
 const getCol = i => i % 9;
 const isFixed = i => initialBoard.value[getRow(i)][getCol(i)] !== 0;
@@ -402,6 +463,7 @@ const getCellClasses = (index) => {
     selected: selectedCell.value && selectedCell.value.row === row && selectedCell.value.col === col,
     error: cellStatus[`${row}-${col}`] === 'error',
     correct: cellStatus[`${row}-${col}`] === 'correct',
+    missing: cellStatus[`${row}-${col}`] === 'missing',
   };
   // 添加九宫格粗边框的类
   if ((col + 1) % 3 === 0 && col < 8) classes['border-right'] = true;
@@ -692,6 +754,10 @@ h1 {
 .cell.correct {
   background-color: #d5f5e3;
   color: #27ae60;
+}
+
+.cell.missing {
+  color: #3498db;
 }
 
 .cell.border-right {

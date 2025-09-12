@@ -1,6 +1,5 @@
 <template>
     <div class="notification-manager">
-        <!-- Vue 的 <transition-group> 组件可以为列表的进入和离开添加动画 -->
         <transition-group name="notification-fade" tag="div">
             <div v-for="notification in friendStore.notifications" :key="notification.id" class="notification-item">
                 <span class="message">🔔 {{ notification.message }}</span>
@@ -18,11 +17,9 @@ const friendStore = useFriendStore();
 <style scoped>
 .notification-manager {
     position: fixed;
-    /* 固定在屏幕上 */
     bottom: 20px;
     right: 20px;
     z-index: 9999;
-    /* 确保在最顶层 */
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -38,7 +35,6 @@ const friendStore = useFriendStore();
     align-items: center;
     gap: 15px;
     border-left: 4px solid #2ecc71;
-    /* 绿色边框表示上线 */
 }
 
 .message {
@@ -59,7 +55,6 @@ const friendStore = useFriendStore();
     opacity: 1;
 }
 
-/* 过渡动画 */
 .notification-fade-enter-active,
 .notification-fade-leave-active {
     transition: all 0.5s ease;

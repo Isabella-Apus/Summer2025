@@ -1,33 +1,26 @@
 require('dotenv').config();
-//引入所有依赖包
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
-const mysql = require("mysql2/promise"); // 数据库模块
+const mysql = require("mysql2/promise"); 
 const jwt = require("jsonwebtoken");
 const helmet = require("helmet");
 const { body, query, param, validationResult } = require("express-validator");
 const path = require("path");
 const { error } = require("console");
 
-//初始化Express服务
 const app = express();
 const PORT = process.env.PORT || 3000;
 const saltRounds = 10; //哈希强度
 const JWT_SECRET = process.env.JWT_SECRET||"(7 % x) + bHATg8DdjpYf";
 
 const mysqlPool = mysql.createPool({
-    // host: process.env.MYSQLHOST || "localhost",
-    // user: process.env.MYSQLUSER || "root",
-    // password: process.env.MYSQLPASSWORD || "root",
-    // database: process.env.MYSQLDATABASE || "gamehub",
-    // port: process.env.MYSQLPORT || 3306,
-    host: process.env.MYSQLHOST ,
-    user: process.env.MYSQLUSER ,
-    password: process.env.MYSQLPASSWORD ,
-    database: process.env.MYSQLDATABASE ,
-    port: process.env.MYSQLPORT ,
+    host: process.env.MYSQLHOST || "localhost",
+    user: process.env.MYSQLUSER || "root",
+    password: process.env.MYSQLPASSWORD || "root",
+    database: process.env.MYSQLDATABASE || "gamehub",
+    port: process.env.MYSQLPORT || 3306,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
@@ -38,10 +31,10 @@ async function checkMysqlConn() {
     try {
         const conn = await mysqlPool.getConnection();
         console.log("成功连接 MySQL 数据库！");
-        conn.release(); // 释放连接回池
+        conn.release(); 
     } catch (err) {
         console.error("MySQL 连接失败：", err.message);
-        process.exit(1); // 连接失败则退出服务，避免无效运行
+        process.exit(1); 
     }
 }
 checkMysqlConn(); // 启动时执行连接检查
@@ -58,9 +51,8 @@ app.use(
         credentials: true,
     })
 );
-app.use(bodyParser.json()); // 解析JSON请求体
+app.use(bodyParser.json());
 
-//强制utf8编码
 app.use((req, res, next) => {
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     next();
@@ -237,7 +229,6 @@ function validateGameState(gameType, gameState) {
         }
     }
 
-    // 所有校验通过
     return true;
 }
 
@@ -294,7 +285,7 @@ app.post(
             conn.release();
             res.status(200).json({
                 success: true,
-                userId: result.insertId, // MySQL 用 result.insertId 替代 sql.js 的 this.lastID
+                userId: result.insertId, 
                 message: "注册成功",
             });
         } catch (err) {

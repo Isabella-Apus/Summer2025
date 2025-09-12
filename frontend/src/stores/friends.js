@@ -93,7 +93,6 @@ export const useFriendStore = defineStore('friends', {
       try {
         const response = await api.post('/api/friend/request', { friend_id: friendId })
         alert(response.data.message || '好友请求已发送。')
-        // 更新搜索结果中的状态
         const user = this.searchResults.find((u) => u.id === friendId)
         if (user) user.status = 'request_sent'
       } catch (err) {
@@ -103,7 +102,6 @@ export const useFriendStore = defineStore('friends', {
     async fetchFriendData() {
       this._setLoading(true)
       try {
-        // 使用 Promise.all 并发获取好友列表和请求列表
         const [friendsRes, requestsRes] = await Promise.all([
           api.get('/api/friend/list'),
           api.get('/api/friend/requests'),
@@ -120,7 +118,7 @@ export const useFriendStore = defineStore('friends', {
       try {
         const response = await api.put(`/api/friend/request/${requestId}`, { status })
         alert(response.data.message || '请求已处理。')
-        this.fetchFriendData() // 重新加载所有好友数据
+        this.fetchFriendData() 
       } catch (err) {
         this._setError('处理请求失败: ' + (err.response?.data?.error || err.message))
       }
@@ -130,7 +128,7 @@ export const useFriendStore = defineStore('friends', {
       try {
         const response = await api.delete(`/api/friend/${friendId}`)
         alert(response.data.message || '好友已删除。')
-        this.fetchFriendData() // 重新加载
+        this.fetchFriendData() 
       } catch (err) {
         this._setError('删除好友失败: ' + (err.response?.data?.error || err.message))
       }

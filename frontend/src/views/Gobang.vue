@@ -8,7 +8,6 @@
       </header>
 
       <div class="game-area">
-        <!-- 左侧棋盘与控制区 -->
         <div class="game-board-container">
           <div class="board-header">
             <h2 class="board-title">五子棋战场</h2>
@@ -38,7 +37,6 @@
           </div>
         </div>
 
-        <!-- 右侧信息面板 -->
         <div class="game-info">
           <div class="info-card">
             <h3>游戏状态</h3>
@@ -78,10 +76,10 @@
           </div>
           <div class="info-card">
             <h3>落子历史</h3>
-            <div class="history-container" ref="historyContainerRef">
+            <div class="history-container" ref="historyContainer">
               <div class="history-steps">
                 <div v-for="move in moveHistory" :key="move.step"
-                  :class="['step', move.player === BLACK ? 'black' : 'white']">
+                  :class="['step', move.player === BLACK ? 'black' : 'white']"@click="handleHistoryClick(move)">
                   {{ move.step }}
                 </div>
               </div>
@@ -125,18 +123,16 @@ import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import api from '@/services/api';
 
-// --- 游戏常量 ---
 const BOARD_SIZE = 15;
 const EMPTY = 0;
 const BLACK = 1;
 const WHITE = -1;
 
-// --- Vue 响应式状态 ---
 const board = ref([]);
 const currentPlayer = ref(BLACK);
 const gameMode = ref('pvp');
 const gameActive = ref(true);
-const aiLevel = ref(2); // 1-初级, 2-中等, 3-困难
+const aiLevel = ref(2); 
 const moveHistory = ref([]);
 const lastMove = ref(null);
 const moveCount = ref(0);
@@ -144,17 +140,17 @@ const gameTime = ref(0);
 const timerInterval = ref(null);
 const blackScore = ref(0);
 const whiteScore = ref(0);
-const winner = ref(null); // null-进行中, 0-平局, 1-黑胜, -1-白胜
+const winner = ref(null); 
 const isSaveModalVisible = ref(false);
 const puzzleNameInput = ref('');
-const currentRecordId = ref(null); // 用于跟踪当前加载的残局ID
+const currentRecordId = ref(null);
 const gameName = ref('');
 const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
 const startTime = ref(null);
+const historyContainer = ref(null);
 
-// --- 计算属性 (Computed Properties) ---
 const flatBoard = computed(() => board.value.flat());
 const playerTurnText = computed(() => currentPlayer.value === BLACK ? '黑方回合' : '白方回合');
 const playerTurnStyle = computed(() => {
@@ -182,7 +178,6 @@ const winMessageSubtitle = computed(() => {
 });
 
 
-// --- 游戏核心方法 ---
 const initGame = () => {
   board.value = Array(BOARD_SIZE).fill(0).map(() => Array(BOARD_SIZE).fill(EMPTY));
   currentPlayer.value = BLACK;
@@ -192,9 +187,8 @@ const initGame = () => {
   moveCount.value = 0;
   gameTime.value = 0;
   winner.value = null;
-  currentRecordId.value = null; // 新游戏重置ID
+  currentRecordId.value = null; 
   startTime.value = new Date();
-  // 启动计时器
   if (timerInterval.value) clearInterval(timerInterval.value);
   timerInterval.value = setInterval(() => {
     if (gameActive.value) gameTime.value++;
@@ -222,7 +216,7 @@ const handleCellClick = (row, col) => {
     return;
   }
 
-  currentPlayer.value *= -1; // 切换玩家
+  currentPlayer.value *= -1; 
 
   if (gameMode.value === 'pve' && currentPlayer.value === WHITE) {
     setTimeout(computerMove, 500);
@@ -256,34 +250,29 @@ const endGame = (winPlayer) => {
   winner.value = winPlayer;
   if (winPlayer === BLACK) blackScore.value++;
   if (winPlayer === WHITE) whiteScore.value++;
-  let winStatus = 0; // 默认平局
+  let winStatus = 0; 
   if (gameMode.value === 'pvp') {
     //只记录人机对战
   } else {
-    // 人机对战，假设玩家是黑方
-    if (winPlayer === BLACK) winStatus = 1; // 战胜AI
-    if (winPlayer === WHITE) winStatus = -1; // 负于AI
+    if (winPlayer === BLACK) winStatus = 1; 
+    if (winPlayer === WHITE) winStatus = -1; 
   }
   recordGameSession(winStatus);
 };
 
-// --- AI 下子逻辑  ---
+//电脑下子逻辑 
 const computerMove = () => {
   if (!gameActive.value) return;
 
   const currentBoard = toRaw(board.value);
   const currentLastBlackMove = moveHistory.value.filter(move => move.player === BLACK).pop() || null;
-  // 根据难度级别选择AI策略
   let move;
 
   if (aiLevel.value === 1) {
-    // 中等难度 - 基础策略
     move = getBasicStrategyMove(currentBoard,currentLastBlackMove);
   } else if (aiLevel.value === 2) {
-    // 较高难度 - 进攻防守平衡
     move = getBalancedMove(currentBoard, currentLastBlackMove);
   } else {
-    // 专家难度 - 最高级策略
     move = getExpertMove(currentBoard, currentLastBlackMove);
   }
   if (moveCount.value !== BOARD_SIZE * BOARD_SIZE) {
@@ -301,10 +290,8 @@ const computerMove = () => {
 const getEmptyCellsInRange=(currentBoard,centerRow, centerCol, range)=> {
   const emptyCells = [];
 
-  // 遍历范围内的所有单元格
   for (let i = centerRow - range; i <= centerRow + range; i++) {
     for (let j = centerCol - range; j <= centerCol + range; j++) {
-      // 检查是否在棋盘范围内且为空位
       if (
         i >= 0 &&
         i < BOARD_SIZE &&
@@ -321,29 +308,13 @@ const getEmptyCellsInRange=(currentBoard,centerRow, centerCol, range)=> {
 }
 
 // 随机落子策略
-const getRandomMove = (currentBoard) => {
-  const emptyCells = [];
-  for (let i = 0; i < BOARD_SIZE; i++) {
-    for (let j = 0; j < BOARD_SIZE; j++) {
-      if (currentBoard[i][j] === EMPTY) {
-        emptyCells.push({ row: i, col: j });
-      }
-    }
-  }
-
-  return emptyCells[Math.floor(Math.random() * emptyCells.length)];
-}
-
 const getRandomPlus=(currentBoard,currentLastBlackMove)=> {
-  // 如果没有黑方落子记录或棋盘为空，返回中心位置
   if (!currentLastBlackMove || moveCount.value === 0) {
     const center = Math.floor(BOARD_SIZE / 2);
     return { row: center, col: center };
   }
 
-  // 从最小范围开始尝试，逐步扩大
   for (let range = 1; range <= BOARD_SIZE; range++) {
-    // 获取当前范围内的所有空位
     const emptyCells = getEmptyCellsInRange(
       currentBoard,
       currentLastBlackMove.row,
@@ -351,67 +322,65 @@ const getRandomPlus=(currentBoard,currentLastBlackMove)=> {
       range
     );
 
-    // 如果该范围内有空位，随机选择一个
     if (emptyCells.length > 0) {
       return emptyCells[Math.floor(Math.random() * emptyCells.length)];
     }
   }
 
-  // 如果所有范围都满了（理论上不可能，因为棋盘不会同时满）
   return {
     row: Math.floor(Math.random() * BOARD_SIZE),
     col: Math.floor(Math.random() * BOARD_SIZE),
   };
 }
 
-// 基础策略 - 优先防守和进攻
+// 难度1（优先防守和进攻）
 const getBasicStrategyMove=(currentBoard,currentLastBlackMove)=> {
-  // 1. 检查自己是否即将获胜
+  //检查自己是否即将获胜
   let move = findWinningMove(currentBoard,WHITE);
   if (move) return move;
 
-  // 2. 检查对手是否即将获胜
+  //检查对手是否即将获胜
   move = findWinningMove(currentBoard,BLACK);
   if (move) return move;
 
-  // 4. 随机落子
+  // 随机落子
   return getRandomPlus(currentBoard,currentLastBlackMove);
 }
 
-// 平衡策略 - 平衡进攻和防守
+// 难度2（平衡进攻和防守）
 const getBalancedMove=(currentBoard,currentLastBlackMove)=> {
-  // 1. 检查自己是否即将获胜
+  // 检查自己是否即将获胜
   let move = findWinningMove(currentBoard,WHITE);
   if (move) return move;
 
-  // 2. 检查对手是否即将获胜
+  // 检查对手是否即将获胜
   move = findWinningMove(currentBoard,BLACK);
   if (move) return move;
 
-  // 3. 创建进攻机会
+  // 创建进攻机会
   move = createAttackOpportunity(currentBoard);
   if (move) return move;
 
-  // 4. 防守对手的进攻
+  // 防守对手的进攻
   move = blockOpponentAttack(currentBoard);
   if (move) return move;
 
-  // 5. 寻找有利位置
+  // 寻找有利位置
   move = findStrategicPosition(currentBoard,currentLastBlackMove);
   if (move) return move;
 }
 
-// 专家策略 - 使用启发式评估函数
+// 难度3（使用启发式评估函数）
 const getExpertMove=(currentBoard,currentLastBlackMove)=> {
-  // 1. 检查自己是否即将获胜
+  // 检查自己是否即将获胜
   let move = findWinningMove(currentBoard,WHITE);
   if (move) return move;
 
-  // 2. 检查对手是否即将获胜
+  // 检查对手是否即将获胜
   move = findWinningMove(currentBoard,BLACK);
   if (move) return move;
 
-  // 3. 使用评估函数找到最佳位置
+  // 使用评估函数找到最佳位置
   return findBestPosition(currentBoard,currentLastBlackMove);
 }
 
@@ -421,18 +390,13 @@ const findWinningMove = (currentBoard, player) => {
   for (let i = 0; i < BOARD_SIZE; i++) {
     for (let j = 0; j < BOARD_SIZE; j++) {
       if (temBoard[i][j] !== EMPTY) continue;
-
-      // 尝试在这个位置落子
       temBoard[i][j] = player;
 
-      // 检查是否获胜
       if (checkWin(temBoard,i, j)) {
-        // 撤销落子
         temBoard[i][j] = EMPTY;
         return { row: i, col: j };
       }
 
-      // 撤销落子
       temBoard[i][j] = EMPTY;
     }
   }
@@ -448,7 +412,6 @@ const findStrategicPosition=(currentBoard,currentLastBlackMove)=> {
   for (let i = 0; i < BOARD_SIZE; i++) {
     for (let j = 0; j < BOARD_SIZE; j++) {
       if (currentBoard[i][j] !== EMPTY) {
-        // 检查周围的空位
         for (let dx = -1; dx <= 1; dx++) {
           for (let dy = -1; dy <= 1; dy++) {
             const ni = i + dx;
@@ -483,7 +446,6 @@ const findStrategicPosition=(currentBoard,currentLastBlackMove)=> {
     return { row: center, col: center };
   }
 
-  // 否则返回随机位置
   return getRandomPlus(currentBoard,currentLastBlackMove);
 }
 
@@ -533,14 +495,14 @@ const blockOpponentAttack=(currentBoard)=> {
 const countThreats=(currentBoard,row, col, player)=> {
   let threatCount = 0;
   const directions = [
-    [0, 1], // 水平
-    [1, 0], // 垂直
-    [1, 1], // 对角线
-    [1, -1], // 反对角线
+    [0, 1], 
+    [1, 0], 
+    [1, 1], 
+    [1, -1], 
   ];
 
   for (const [dx, dy] of directions) {
-    let count = 1; // 当前位置
+    let count = 1; 
 
     // 正向检查
     for (let i = 1; i <= 4; i++) {
@@ -609,19 +571,17 @@ const evaluatePosition=(currentBoard,row, col)=> {
 
   // 评估每个方向
   const directions = [
-    [0, 1], // 水平
-    [1, 0], // 垂直
-    [1, 1], // 对角线
-    [1, -1], // 反对角线
+    [0, 1], 
+    [1, 0], 
+    [1, 1], 
+    [1, -1], 
   ];
 
   for (const [dx, dy] of directions) {
-    // 评估白子的潜力
     currentBoard[row][col] = WHITE;
     score += evaluateLine(currentBoard, row, col, dx, dy, WHITE) * 5;
     currentBoard[row][col] = EMPTY;
 
-    // 评估黑子的威胁
     currentBoard[row][col] = BLACK;
     score += evaluateLine(currentBoard, row, col, dx, dy, BLACK) * 8;
     currentBoard[row][col] = EMPTY;
@@ -633,7 +593,7 @@ const evaluatePosition=(currentBoard,row, col)=> {
 // 评估一条线上的潜力
 const evaluateLine=(currentBoard,row, col, dx, dy, player)=> {
   let score = 0;
-  let count = 1; // 当前位置
+  let count = 1; 
   let flag3 = 0;
   // 正向检查
   for (let i = 1; i <= 4; i++) {
@@ -683,12 +643,22 @@ const evaluateLine=(currentBoard,row, col, dx, dy, player)=> {
 }
 
 
-// --- UI 辅助方法 ---
 const getRow = index => Math.floor(index / BOARD_SIZE);
 const getCol = index => index % BOARD_SIZE;
 const isLastMove = (row, col) => lastMove.value && lastMove.value.row === row && lastMove.value.col === col;
 const isStarPoint = (row, col) => (row === 3 || row === 7 || row === 11) && (col === 3 || col === 7 || col === 11);
 
+const handleHistoryClick = (move) => {
+  const { row, col } = move;
+  const targetCell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+  if (targetCell) {
+    targetCell.scrollIntoView({ behavior: "smooth", block: "center" });
+    targetCell.style.boxShadow = "0 0 10px 3px #ff3366";
+    setTimeout(() => {
+      targetCell.style.boxShadow = ""; 
+    }, 2000);
+  }
+};
 
 const changeGameMode = (mode) => {
   if (gameMode.value === mode) return;
@@ -716,7 +686,7 @@ const undoMove = () => {
   lastMove.value = moveHistory.value.length > 0 ? moveHistory.value[moveHistory.value.length - 1] : null;
 };
 
-// --- 保存和加载残局 ---
+// 保存和加载残局
 const openSaveModal = () => {
   if (!gameActive.value) {
     alert("请在游戏进行中保存残局");
@@ -813,18 +783,18 @@ const loadPuzzleFromRoute = async (recordId) => {
 
   } catch (err) {
     alert("加载残局失败：" + (err.response?.data?.error || err.message));
-    router.push('/games/gobang'); // 加载失败则重置URL
+    router.push('/games/gobang'); 
   }
 };
-// --- 发送统计数据 ---
+//发送统计数据
 const recordGameSession = async (winStatus) => {
-  if (!startTime.value) return; // 如果没有开始时间，则不记录
+  if (!startTime.value) return; 
 
   const sessionData = {
     gameType: 'gobang',
     startTime: startTime.value.toISOString(),
     endTime: new Date().toISOString(),
-    winStatus: winStatus, // 1=胜, -1=负, 0=平局/中途退出
+    winStatus: winStatus, 
   };
   try {
     await api.post('/api/stat/record-game-session', sessionData);
@@ -833,7 +803,7 @@ const recordGameSession = async (winStatus) => {
   }
 };
 
-// --- Vue 生命周期钩子 ---
+//Vue 生命周期钩子
 onMounted(() => {
   if (!authStore.isLoggedIn) {
     alert("请先登录以进行游戏。");
@@ -842,7 +812,6 @@ onMounted(() => {
     return;
   }
 
-  // 检查 URL 中是否有 load 参数
   const recordIdToLoad = route.query.load;
   if (recordIdToLoad) {
     loadPuzzleFromRoute(recordIdToLoad);
@@ -855,7 +824,15 @@ onUnmounted(() => {
   if (gameActive.value) {
     recordGameSession(0);
   } if (timerInterval.value) clearInterval(timerInterval.value);
-})
+});
+
+watch(moveHistory, async () => {
+  await nextTick();
+  const container = historyContainer.value;
+  if (container) {
+    container.scrollTop = container.scrollHeight;
+  }
+}, { deep: true });
 </script>
 
 

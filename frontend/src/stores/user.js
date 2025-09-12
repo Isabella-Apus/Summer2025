@@ -3,11 +3,8 @@ import { useAuthStore } from './auth'
 import api from '@/services/api'
 import axios from 'axios'
 
-const API_BASE_URL = 'http://localhost:3000'
-
 export const useUserStore = defineStore('user', {
   state: () => ({
-    // 可以存储用户收藏的游戏列表等
     favoriteGames: [],
     allGames: [
       { id: 'gobang', name: '五子棋', icon: '⚫⚪', path: 'games/gobang' },
@@ -47,14 +44,10 @@ export const useUserStore = defineStore('user', {
       const isFavorited = this.favoriteGames.includes(gameId);
       try {
         if (isFavorited) {
-          // 如果已收藏，则调用后端删除接口
           await api.delete(`/api/user/favorites/${gameId}`);
-          // 成功后再更新前端状态
           this.favoriteGames = this.favoriteGames.filter(id => id !== gameId);
         } else {
-          // 如果未收藏，则调用后端添加接口
           await api.post('/api/user/favorites', { game_id: gameId });
-          // 成功后再更新前端状态
           this.favoriteGames.push(gameId);
         }
       } catch (error) {

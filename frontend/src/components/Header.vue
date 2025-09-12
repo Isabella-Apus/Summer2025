@@ -8,14 +8,11 @@
                 <div class="title-user-status">
                     <span class="user-profile" v-if="authStore.isLoggedIn">{{ authStore.username.charAt(0) }}</span>
                     <span class="user-name">{{ authStore.username }}</span>
-                    <!-- v-if/v-else 用于根据登录状态条件性地显示元素 -->
                     <button v-if="authStore.isLoggedIn" class="logout-btn" @click="handleLogout">退出</button>
                     <button v-else class="auth-btn" @click="authStore.openAuthModal('login')">登录/注册</button>
                 </div>
             </div>
             <nav>
-                <!-- <router-link> 是 Vue Router 提供的组件，用于导航 -->
-                <!-- :class 动态绑定 class，当路由匹配时应用 'active' 样式 -->
                 <router-link to="/" :class="{ active: $route.path === '/' }">首页</router-link>
                 <a href="/#game-store" @click.prevent="scrollToGameStore">挑选游戏</a>
                 <router-link to="/mygames" :class="{ active: $route.path === '/mygames' }">我的游戏仓库</router-link>
@@ -42,7 +39,7 @@ const scrollToGameStore = () => {
     // 如果当前不在首页，先跳转到首页，然后滚动
     if (router.currentRoute.value.path !== '/') {
         router.push('/').then(() => {
-            setTimeout(() => { // 等待 DOM 更新
+            setTimeout(() => { 
                 const gameStoreEl = document.getElementById('game-store');
                 if (gameStoreEl) {
                     gameStoreEl.scrollIntoView({ behavior: 'smooth' });
@@ -60,7 +57,6 @@ const scrollToGameStore = () => {
 </script>
 
 <style scoped>
-/* 这里的样式只对当前 Header 组件生效 */
 header {
     background-color: #2c3e50;
     color: white;

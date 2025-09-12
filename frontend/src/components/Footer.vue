@@ -11,7 +11,6 @@
 </template>
 
 <script setup>
-// 这个组件没有复杂的逻辑，所以 script 部分是空的
 </script>
 
 <style scoped>

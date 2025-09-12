@@ -12,7 +12,6 @@
       <div class="container">
         <h2>游戏商店</h2>
         <div class="game-grid">
-          <!-- 五子棋卡片 -->
           <div class="game-card" @click="navigateToGame('/games/gobang')">
             <div class="game-icon">&#x26AB;&#x26AA;</div>
             <h3>五子棋</h3>
@@ -26,7 +25,6 @@
             </button>
           </div>
 
-          <!-- 数独卡片 -->
           <div class="game-card" @click="navigateToGame('/games/sudoku')">
             <div class="game-icon">&#x1F522;</div>
             <h3>数独</h3>

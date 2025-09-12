@@ -6,7 +6,7 @@
         <div v-if="friendStore.isLoading" class="loading-state">正在操作中...</div>
         <div v-if="friendStore.error" class="error-state">{{ friendStore.error }}</div>
 
-        <!-- 1. 搜索好友 -->
+        <!-- 搜索好友 -->
         <div class="friend-section">
             <h3><i class="fas fa-search"></i> 搜索好友</h3>
             <div class="search-bar">
@@ -26,7 +26,7 @@
             </div>
         </div>
 
-        <!-- 2. 好友请求 -->
+        <!-- 好友请求 -->
         <div class="friend-section" v-if="friendStore.friendRequests.length > 0">
             <h3><i class="fas fa-envelope"></i> 好友请求</h3>
             <div class="request-list">
@@ -40,7 +40,7 @@
             </div>
         </div>
 
-        <!-- 3. 我的好友 -->
+        <!-- 我的好友 -->
         <div class="friend-section">
             <h3><i class="fas fa-users"></i> 我的好友 ({{ friendStore.friends.length }})</h3>
             <div v-if="friendStore.friends.length === 0" class="no-data">
@@ -59,11 +59,10 @@
             </div>
         </div>
 
-        <!--4. 好友排行榜-->
+        <!--好友排行榜-->
         <div class="friend-section">
             <h3><i class="fas fa-trophy"></i>好友排行榜</h3>
             <div class="rankings-container">
-                <!-- 标签页切换 -->
                 <div class="tabs">
                     <button v-for="tab in tabs" :key="tab.key" @click="activeTab = tab.key"
                         :class="{ active: activeTab === tab.key }">
@@ -76,7 +75,6 @@
                 <div v-else-if="rankedData.length === 0" class="empty-state">暂无好友数据</div>
 
                 <div v-else class="ranking-content">
-                    <!-- 颁奖台 (前三名) -->
                     <div class="podium">
                         <!-- 第二名 -->
                         <div class="podium-item silver" v-if="rankedData[1]">
@@ -127,8 +125,6 @@ const rankingsData = ref([]);
 const isLoading = ref(true);
 const error = ref(null);
 
-// --- 组件方法 ---
-// 这些方法调用 store 中定义的 actions
 const performSearch = () => {
     if (searchQuery.value.trim()) {
         friendStore.searchUsers(searchQuery.value.trim());
@@ -140,11 +136,11 @@ const sendRequest = (friendId) => {
 };
 
 const acceptRequest = (requestId) => {
-    friendStore.handleFriendRequest(requestId, 1); // 1 = 接受
+    friendStore.handleFriendRequest(requestId, 1); 
 };
 
 const declineRequest = (requestId) => {
-    friendStore.handleFriendRequest(requestId, 2); // 2 = 拒绝
+    friendStore.handleFriendRequest(requestId, 2); 
 };
 
 const removeFriend = (friendId) => {
@@ -177,7 +173,7 @@ const rankedData = computed(() => {
     if (!tabInfo) return [];
 
     return [...rankingsData.value].sort((a, b) => {
-        // 特殊处理数独最佳用时，null 值排在最后
+        // 考虑数独最佳用时中null 值排在最后
         if (tabInfo.key === 'sudoku_best_time') {
             if (a.sudoku_best_time === null) return 1;
             if (b.sudoku_best_time === null) return -1;
@@ -205,9 +201,8 @@ const formatScore = (item) => {
         default: return value;
     }
 };
-// --- 生命周期钩子 ---
+
 onMounted(() => {
-    // 组件加载时，自动获取好友列表和好友请求
     friendStore.fetchFriendData();
     fetchRankings();
 });
@@ -265,7 +260,6 @@ h2 {
     color: #3498db;
 }
 
-/* 搜索 */
 .search-bar {
     display: flex;
     gap: 10px;
@@ -320,7 +314,6 @@ h2 {
     color: #7f8c8d;
 }
 
-/* 请求 */
 .request-item .actions {
     display: flex;
     gap: 10px;
@@ -344,7 +337,6 @@ h2 {
     cursor: pointer;
 }
 
-/* 好友列表 */
 .friend-item {
     display: grid;
     grid-template-columns: 20px 1fr auto auto;

@@ -9,7 +9,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // 如果后端需要跨域凭证
+  withCredentials: true, 
 });
 
 // 请求拦截器：在发送请求前添加 JWT Token

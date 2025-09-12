@@ -82,7 +82,7 @@ const fetchStatsData = async () => {
   }
 };
 
-// 计算属性，用于处理和格式化从后端获取的数据
+//处理和格式化从后端获取的数据
 const gobangWinRate = computed(() => {
   if (!stats.value || (stats.value.gobang_wins + stats.value.gobang_losses === 0)) {
     return '0.00';

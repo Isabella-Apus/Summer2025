@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia'
-import api from '@/services/api' // 我们将使用封装后的 api
+import api from '@/services/api' 
 import { useUserStore } from './user';
 
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    isLoggedIn: !!localStorage.getItem('authToken'), // 根据 token 初始化登录状态
+    isLoggedIn: !!localStorage.getItem('authToken'), 
     currentUser: JSON.parse(localStorage.getItem('user')) || null,
     authToken: localStorage.getItem('authToken') || null,
     showAuthModal: false,

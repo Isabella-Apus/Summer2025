@@ -8,7 +8,6 @@
         <router-link to="/#game-store" class="btn-primary">去游戏商店看看</router-link>
       </div>
       <div v-else class="records-grid">
-        <!-- 循环渲染收藏的游戏卡片 -->
         <div v-for="game in userStore.getFavoriteGames" :key="game.id" class="favorite-card-container">
           <div class="favorite-content" @click="navigateToGame(game.path)">
             <div class="game-icon">{{ game.icon }}</div>
@@ -20,21 +19,18 @@
     </section>
     <section class="content-section">
       <h3>💾 保存的残局</h3>
-      <!-- 筛选器 -->
       <div class="filter-controls">
         <button @click="filterBy = 'all'" :class="{ active: filterBy === 'all' }">全部</button>
         <button @click="filterBy = 'gobang'" :class="{ active: filterBy === 'gobang' }">五子棋</button>
         <button @click="filterBy = 'sudoku'" :class="{ active: filterBy === 'sudoku' }">数独</button>
       </div>
 
-      <!-- 残局列表 -->
       <div v-if="isLoading" class="loading">正在加载游戏记录...</div>
       <div v-else-if="error" class="error-message">{{ error }}</div>
       <div v-else-if="filteredRecords.length === 0" class="empty-state">
         <p>没有找到符合条件的残局记录。</p>
       </div>
       <div v-else class="records-grid">
-        <!-- 循环渲染筛选后的残局卡片 -->
         <div v-for="record in filteredRecords" :key="record.id" class="record-card">
           <h4>{{ record.name }}</h4>
           <p class="game-type">{{ record.gameType === 'gobang' ? '五子棋' : '数独' }}</p>
@@ -60,7 +56,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import api from '@/services/api'; // 导入封装好的 api
+import api from '@/services/api'; 
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 
@@ -97,7 +93,6 @@ const navigateToGame = (path) => {
 }
 
 const loadGame = (recordId) => {
-  // 根据游戏类型跳转到不同的游戏页面，并带上记录ID
   const record = gameRecords.value.find(r => r.id === recordId);
   if (record) {
     router.push(`/games/${record.gameType}?load=${recordId}`);
@@ -108,7 +103,6 @@ const deleteGame = async (recordId) => {
   if (confirm('确定要删除这个游戏记录吗？')) {
     try {
       await api.delete(`/delete-game/${recordId}`);
-      // 从列表中移除已删除的记录
       gameRecords.value = gameRecords.value.filter(r => r.id !== recordId);
     } catch (err) {
       alert('删除失败，请重试。');
@@ -121,7 +115,6 @@ onMounted(fetchGameHistory);
 </script>
 
 <style scoped>
-/* 页面通用样式 */
 .page-container {
   padding-top: 40px;
   padding-bottom: 40px;
