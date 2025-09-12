@@ -779,8 +779,6 @@ const loadPuzzleFromRoute = async (recordId) => {
       if (gameActive.value) gameTime.value++;
     }, 1000);
 
-    alert("残局加载成功！");
-
   } catch (err) {
     alert("加载残局失败：" + (err.response?.data?.error || err.message));
     router.push('/games/gobang'); 

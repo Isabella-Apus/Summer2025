@@ -12,7 +12,7 @@ const { error } = require("console");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const saltRounds = 8; //哈希强度
+const saltRounds = 10; //哈希强度
 const JWT_SECRET = process.env.JWT_SECRET||"(7 % x) + bHATg8DdjpYf";
 
 const mysqlPool = mysql.createPool({

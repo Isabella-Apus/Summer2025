@@ -107,6 +107,18 @@ const handleRegister = async () => {
     authStore.setAlert('两次输入的密码不一致', 'error');
     return;
   }
+  if (username.length < 3 || username.length > 20) {
+    alert("用户名长度必须在3到20个字符之间！");
+    return;
+  }
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+    alert("用户名只能包含字母、数字和下划线！");
+    return;
+  }
+  if (password.length < 6) {
+    alert("密码至少需要6个字符！");
+    return;
+  }
   isLoading.value = true;
   try {
     await authStore.register(registerUsername.value, registerPassword.value);

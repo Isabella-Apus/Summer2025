@@ -552,7 +552,6 @@ const loadPuzzleFromRoute = async (recordId) => {
     gameName.value = gameState.name;
 
     startTimer();
-    alert("残局加载成功!");
 
   } catch (err) {
     alert("加载残局失败: " + (err.response?.data?.error || err.message));
