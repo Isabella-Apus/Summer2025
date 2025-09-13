@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import api from '@/services/api'
 import { useAuthStore } from './auth'
+import { faL } from '@fortawesome/free-solid-svg-icons'
 
 export const useFriendStore = defineStore('friends', {
   state: () => ({
@@ -26,49 +27,51 @@ export const useFriendStore = defineStore('friends', {
       const newNotification = {
         id: Date.now(),
         message: message,
-      };
-      this.notifications.push(newNotification);
-      setTimeout(() => { this.removeNotification(newNotification.id); }, 3000);
+      }
+      this.notifications.push(newNotification)
+      setTimeout(() => {
+        this.removeNotification(newNotification.id)
+      }, 3000)
     },
     removeNotification(id) {
-      this.notifications = this.notifications.filter(n => n.id !== id);
+      this.notifications = this.notifications.filter((n) => n.id !== id)
     },
     //轮询好友状态
     async pollFriendStatus() {
-      if (!useAuthStore().isLoggedIn) return;
+      if (!useAuthStore().isLoggedIn) return
       try {
-        const response = await api.get('/api/friend/list');
-        const currentFriends = response.data.data;
-        this.friends = currentFriends;
+        const response = await api.get('/api/friend/list')
+        const currentFriends = response.data.data
+        this.friends = currentFriends
 
         //找出当前在线好友
-        const currentOnlineId = new Set();
-        currentFriends.forEach(friend => {
+        const currentOnlineId = new Set()
+        currentFriends.forEach((friend) => {
           if (this.getFriendStatus(friend) === '在线') {
-            currentOnlineId.add(friend.id);
+            currentOnlineId.add(friend.id)
             if (!this.previousOnline.has(friend.id)) {
-              this._addNotification(`您的好友 ${friend.username} 已上线`);
+              this._addNotification(`您的好友 ${friend.username} 已上线`)
             }
           }
-        });
-        this.previousOnline = currentOnlineId;
+        })
+        this.previousOnline = currentOnlineId
       } catch (error) {
-        console.error("轮询好友状态失败：", error);
+        console.error('轮询好友状态失败：', error)
       }
     },
     startPolling() {
       if (this.pollingInterval) {
-        clearInterval(this.pollingInterval);
+        clearInterval(this.pollingInterval)
       }
-      this.pollFriendStatus();
-      this.pollingInterval = setInterval(this.pollFriendStatus, 10000);
+      this.pollFriendStatus()
+      this.pollingInterval = setInterval(this.pollFriendStatus, 10000)
     },
     stopPolling() {
       if (this.pollingInterval) {
-        clearInterval(this.pollingInterval);
-        this.pollingInterval=null;
-        this.previousOnline.clear();
-        console.log("好友状态轮询已停止");
+        clearInterval(this.pollingInterval)
+        this.pollingInterval = null
+        this.previousOnline.clear()
+        console.log('好友状态轮询已停止')
       }
     },
     _setLoading(status) {
@@ -80,9 +83,16 @@ export const useFriendStore = defineStore('friends', {
     },
     async searchUsers(username) {
       this._setLoading(true)
+      try {
         const response = await api.get('/api/friend/search', { params: { username } })
         this.searchResults = response.data.data
-      
+      } catch (err) {
+        console.error('搜索用户失败:', err)
+        this._setError('搜索用户失败，请稍后再试。')
+        this.searchResults = [] // 失败时清空结果
+      } finally {
+        this._setLoading(false)
+      }
     },
     async sendFriendRequest(friendId) {
       try {
@@ -96,23 +106,39 @@ export const useFriendStore = defineStore('friends', {
     },
     async fetchFriendData() {
       this._setLoading(true)
+      this._setError(null)
+      try {
         const [friendsRes, requestsRes] = await Promise.all([
           api.get('/api/friend/list'),
           api.get('/api/friend/requests'),
         ])
         this.friends = friendsRes.data.data
         this.friendRequests = requestsRes.data.data
+      } catch (err) {
+        console.error('获取好友数据失败:', err)
+        this._setError('无法加载好友数据，请刷新页面重试。')
+      } finally {
+        this._setLoading(false)
+      }
     },
     async handleFriendRequest(requestId, status) {
+      this._setLoading(true)
+      try {
         const response = await api.put(`/api/friend/request/${requestId}`, { status })
         alert(response.data.message || '请求已处理。')
-        this.fetchFriendData() 
+        this.fetchFriendData()
+      } catch (err) {
+        console.error('处理好友请求失败:', err)
+        this._setError('处理请求失败: ' + (err.response?.data?.error || err.message))
+      } finally {
+        this._setLoading(false)
+      }
     },
     async deleteFriend(friendId) {
       if (!confirm('确定要删除这位好友吗？')) return
-        const response = await api.delete(`/api/friend/${friendId}`)
-        alert(response.data.message || '好友已删除。')
-        this.fetchFriendData() 
+      const response = await api.delete(`/api/friend/${friendId}`)
+      alert(response.data.message || '好友已删除。')
+      this.fetchFriendData()
     },
   },
 })
