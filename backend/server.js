@@ -1139,6 +1139,7 @@ app.listen(PORT, () => {
     console.log("- GET  /game-history：获取游戏历史（需登录）");
     console.log("- DELETE /delete-game/:id：删除游戏记录（需登录）");
     console.log("- PUT /update-game/:id：更新游戏记录（需登录）");
+    console.log("- GET /check-puzzle-name：检查残局名称是否重复（需登录）");
     console.log("--- 用户统计接口 ---");
     console.log("- POST /api/stat/record-game-session：记录游戏会话（需登录）");
     console.log("- GET  /api/stats/summary：获取用户状态（需登录）");
@@ -1149,9 +1150,9 @@ app.listen(PORT, () => {
     console.log("- PUT  /api/friend/request/:id：处理好友请求（需登录）");
     console.log("- GET  /api/friend/list：获取好友列表（需登录）");
     console.log("- DELETE /api/friend/:friend_id：删除好友（需登录）");
+    console.log("- GET /api/stats/friend-rankings：用户好友排行榜（需登录）");
     console.log("---用户收藏接口---");
     console.log("- GET /api/user/favorites：获取当前用户的收藏列表（需登录）");
     console.log("- POST /api/user/favorites：添加一个收藏（需登录）");
     console.log("- DELETE /api/user/favorites/:game_id：移除一个收藏（需登录）");
-    console.log("- GET /api/stats/friend-rankings");
 });

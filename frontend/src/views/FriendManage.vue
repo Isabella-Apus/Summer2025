@@ -157,15 +157,9 @@ const tabs = [
 const fetchRankings = async () => {
     isLoading.value = true;
     error.value = null;
-    try {
         const response = await api.get('/api/stats/friend-rankings');
         rankingsData.value = response.data.data;
-    } catch (err) {
-        error.value = '加载排行榜失败';
-        console.error(err);
-    } finally {
-        isLoading.value = false;
-    }
+   
 };
 
 const rankedData = computed(() => {

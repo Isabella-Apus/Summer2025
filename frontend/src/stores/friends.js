@@ -80,14 +80,9 @@ export const useFriendStore = defineStore('friends', {
     },
     async searchUsers(username) {
       this._setLoading(true)
-      try {
         const response = await api.get('/api/friend/search', { params: { username } })
         this.searchResults = response.data.data
-      } catch (err) {
-        this._setError('搜索用户失败: ' + (err.response?.data?.error || err.message))
-      } finally {
-        this._setLoading(false)
-      }
+      
     },
     async sendFriendRequest(friendId) {
       try {
@@ -101,37 +96,23 @@ export const useFriendStore = defineStore('friends', {
     },
     async fetchFriendData() {
       this._setLoading(true)
-      try {
         const [friendsRes, requestsRes] = await Promise.all([
           api.get('/api/friend/list'),
           api.get('/api/friend/requests'),
         ])
         this.friends = friendsRes.data.data
         this.friendRequests = requestsRes.data.data
-      } catch (err) {
-        this._setError('加载好友数据失败: ' + (err.response?.data?.error || err.message))
-      } finally {
-        this._setLoading(false)
-      }
     },
     async handleFriendRequest(requestId, status) {
-      try {
         const response = await api.put(`/api/friend/request/${requestId}`, { status })
         alert(response.data.message || '请求已处理。')
         this.fetchFriendData() 
-      } catch (err) {
-        this._setError('处理请求失败: ' + (err.response?.data?.error || err.message))
-      }
     },
     async deleteFriend(friendId) {
       if (!confirm('确定要删除这位好友吗？')) return
-      try {
         const response = await api.delete(`/api/friend/${friendId}`)
         alert(response.data.message || '好友已删除。')
         this.fetchFriendData() 
-      } catch (err) {
-        this._setError('删除好友失败: ' + (err.response?.data?.error || err.message))
-      }
     },
   },
 })

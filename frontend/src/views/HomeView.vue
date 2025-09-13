@@ -67,7 +67,6 @@ onMounted(() => {
     userStore.fetchFavorites();
 })
 const navigateToGame = (path) => {
-
   router.push(path);
 };
 </script>
