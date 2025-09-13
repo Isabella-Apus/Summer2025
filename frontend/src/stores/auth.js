@@ -61,7 +61,16 @@ export const useAuthStore = defineStore('auth', {
           this.setAlert('注册成功！请登录', 'success');
           this.authModalTab = 'login';
       } catch (error) {
-          this.setAlert(error.response?.data?.error || '注册失败', 'error');
+        let errorMessage = '注册失败，请稍后再试';
+        if (error.response && error.response.data) {
+          if (error.response.data.errors && Array.isArray(error.response.data.errors) && error.response.data.errors.length > 0) {
+            errorMessage = error.response.data.error[0].msg;
+          }
+          else if (error.response.data.error) {
+            errorMessage=error.response.data.error
+          }
+        }
+          this.setAlert(errorMessage, 'error');
           throw error;
         }
     },
