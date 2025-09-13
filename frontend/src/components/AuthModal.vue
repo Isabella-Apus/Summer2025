@@ -107,7 +107,7 @@ const handleRegister = async () => {
     authStore.setAlert('两次输入的密码不一致', 'error');
     return;
   }
-  if (registerUsername.length < 3 || registerUsername.length > 20) {
+  if (registerUsername.value.length < 3 || registerUsername.value.length > 20) {
     authStore.setAlert('用户名长度必须在3到20个字符之间！','error');
     return;
   }
@@ -115,7 +115,7 @@ const handleRegister = async () => {
     authStore.setAlert('用户名只能包含字母、数字和下划线！','error');
     return;
   }
-  if (registerPassword.length < 6) {
+  if (registerPassword.value.length < 6) {
     authStore.setAlert('密码至少需要6个字符！','error');
     return;
   }
