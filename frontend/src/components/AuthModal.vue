@@ -108,15 +108,15 @@ const handleRegister = async () => {
     return;
   }
   if (registerUsername.length < 3 || registerUsername.length > 20) {
-    alert("用户名长度必须在3到20个字符之间！");
+    authStore.setAlert("用户名长度必须在3到20个字符之间！");
     return;
   }
-  if (!/^[a-zA-Z0-9_]+$/.test(registerPassword)) {
-    alert("用户名只能包含字母、数字和下划线！");
+  if (!/^[a-zA-Z0-9_]+$/.test(registerUsername)) {
+    authStore.setAlert("用户名只能包含字母、数字和下划线！");
     return;
   }
   if (registerPassword.length < 6) {
-    alert("密码至少需要6个字符！");
+    authStore.setAlert("密码至少需要6个字符！");
     return;
   }
   isLoading.value = true;
