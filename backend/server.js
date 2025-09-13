@@ -102,7 +102,7 @@ async function createTables() {
                 id INT PRIMARY KEY AUTO_INCREMENT,
                 user_id INT NOT NULL,
                 friend_id INT NOT NULL,
-                status TINYINT NOT NULL DEFAULT 0, -- 0=pending, 1=accepted, 2=rejected
+                status TINYINT NOT NULL DEFAULT 0, -- 0=未处理, 1=接受, 2=拒绝
                 reject_reason VARCHAR(100) DEFAULT NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -1079,7 +1079,6 @@ app.get("/api/stats/friend-rankings", authenticate, async (req, res) => {
             return res.status(200).json({ success: true, data: [] });
         }
 
-        // 构建占位符 (??) 用于 IN 查询，防止 SQL 注入
         const placeholders = allUserIds.map(() => '?').join(',');
 
         // 一次性查询所有相关用户的统计数据和用户名
@@ -1101,7 +1100,6 @@ app.get("/api/stats/friend-rankings", authenticate, async (req, res) => {
         
         conn.release();
 
-        //在 Node.js 中计算胜率等派生数据
         const rankingsData = stats.map(stat => {
             const gobang_wins = parseInt(stat.gobang_wins) || 0;
             const gobang_losses = parseInt(stat.gobang_losses) || 0;
@@ -1143,7 +1141,7 @@ app.listen(PORT, () => {
     console.log("- PUT /update-game/:id：更新游戏记录（需登录）");
     console.log("--- 用户统计接口 ---");
     console.log("- POST /api/stat/record-game-session：记录游戏会话（需登录）");
-    console.log("- GET  /api/stats/summary：获取用户状态");
+    console.log("- GET  /api/stats/summary：获取用户状态（需登录）");
     console.log("--- 好友功能接口 ---");
     console.log("- GET  /api/friend/search?username=...：搜索用户（需登录）");
     console.log("- POST /api/friend/request：发送好友请求（需登录）");
