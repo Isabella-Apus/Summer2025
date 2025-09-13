@@ -157,8 +157,16 @@ const tabs = [
 const fetchRankings = async () => {
     isLoading.value = true;
     error.value = null;
+    try {
         const response = await api.get('/api/stats/friend-rankings');
         rankingsData.value = response.data.data;
+    }
+    catch (err) {
+        console.error("获取好友排行榜失败:", err);
+        error.value = '无法加载好友排行榜，请稍后再试。';
+    } finally {
+        isLoading.value = false;
+    }
    
 };
 
